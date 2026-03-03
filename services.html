@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>שירותי פרסום ממומן מקצועיים לעסקים — מוטי ניסים</title>
+    <meta name="description" content="קמפיינים ממומנים בגוגל, פייסבוק ואינסטגרם המותאמים במיוחד לעסקים. ניהול תקציב חכם, טרגוט מדויק ותוצאות מדידות. גלה את מגוון השירותים שלנו.">
+    <meta name="keywords" content="שירותי פרסום ממומן, קמפיינים ממומנים לעסקים, ניהול פרסום בגוגל, פרסום ברשתות חברתיות, עסקים">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: 'fc130dcc-fddc-4b47-ae28-b0119b2805ed',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="שירותי פרסום ממומן מקצועיים לעסקים — מוטי ניסים">
+  <meta property="og:description" content="קמפיינים ממומנים בגוגל, פייסבוק ואינסטגרם המותאמים במיוחד לעסקים. ניהול תקציב חכם, טרגוט מדויק ותוצאות מדידות. גלה את מגוון השירותים שלנו.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="he_IL">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="שירותי פרסום ממומן מקצועיים לעסקים — מוטי ניסים">
+  <meta name="twitter:description" content="קמפיינים ממומנים בגוגל, פייסבוק ואינסטגרם המותאמים במיוחד לעסקים. ניהול תקציב חכם, טרגוט מדויק ותוצאות מדידות. גלה את מגוון השירותים שלנו.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: #333 !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))), .sub-menu:not(:has(li)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .sub-menu.mobile-expanded { max-height: 500px !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-dark) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-dark) !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-dark) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      #mic-access-tool-general-button, .mic-access-tool-general-button,
+      #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+      ._access-icon, #mic-access-tool-box, .mic-access-tool-box,
+      #mic-init-access-tool #mic-access-tool-box, div[id*="mic-access-tool-box"], ._access-menu {
+        display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
+      }
+    </style>
+</head>
+<body>
+
+  <nav class="navbar" dir="rtl">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewbox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewbox="0 0 24 24" fill="none" style="display:none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+  
+  <button class="phone-header-btn" aria-label="Call">
+    <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+  
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="/" class="logo-link">
+        <img src="/assets/business-logo.webp" alt="מוטי ניסים" class="logo">
+      </a>
+    </div>
+    
+    <ul class="nav-menu" id="navMenu"><li><a href="/services">שירותים</a></li><li><a href="/results">תוצאות</a></li></ul>
+    
+    <div class="nav-cta-container">
+      <a href="/contact" class="nav-cta-btn">צור קשר</a>
+    </div>
+  </div>
+</nav>
+  
+  <main>
+    <section class="services-page-intro-section" data-layout-spec="שירותים-page-intro">
+  <div class="services-page-intro-container">
+    <div class="services-page-intro-content">
+      <h1 class="services-page-intro-headline">שירותים שמתוכננים להוצאה יעילה ולמידה צפויה</h1>
+      <p class="services-page-intro-description">התמקדות שלנו היא בהקמה נכונה מההתחלה, אופטימיזציה רציפה של הקמפיינים, ודיווח ברור שמאפשר לך להבין בדיוק לאן הולך התקציב ומה החזר ההשקעה. אנחנו עובדים לפי מתודולוגיה מובנית שמבטיחה שכל שקל שמושקע עובד בשבילך.</p>
+      <div class="services-page-intro-benefits">
+        <div class="services-page-intro-benefit-item">
+          <svg class="services-page-intro-benefit-icon" data-element-type="icon" data-icon-type="svg" width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="services-page-intro-benefit-text">אסטרטגיה ומבנה</span>
+        </div>
+        <div class="services-page-intro-benefit-item">
+          <svg class="services-page-intro-benefit-icon" data-element-type="icon" data-icon-type="svg" width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="services-page-intro-benefit-text">מעקב ואטריביושן נקיים</span>
+        </div>
+        <div class="services-page-intro-benefit-item">
+          <svg class="services-page-intro-benefit-icon" data-element-type="icon" data-icon-type="svg" width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="services-page-intro-benefit-text">קצב אופטימיזציה שבועי</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="services-page-intro-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewbox="0 0 1200 2" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="0" x2="480" y2="0" stroke="var(--border-light)" stroke-width="1"></line>
+      <line x1="520" y1="0" x2="680" y2="0" stroke="var(--border-light)" stroke-width="1"></line>
+      <line x1="720" y1="0" x2="1200" y2="0" stroke="var(--border-light)" stroke-width="1"></line>
+      <line x1="0" y1="2" x2="480" y2="2" stroke="var(--border-light)" stroke-width="1"></line>
+      <line x1="520" y1="2" x2="680" y2="2" stroke="var(--border-light)" stroke-width="1"></line>
+      <line x1="720" y1="2" x2="1200" y2="2" stroke="var(--border-light)" stroke-width="1"></line>
+    </svg>
+  </div>
+</section>
+
+<section class="services-service-packages-section" data-layout-spec="שירותים-service-packages">
+  <div class="services-service-packages-container">
+    <div class="services-service-packages-header">
+      <h2>אפשרויות ברורות, אותה משמעת מדידה</h2>
+      <p class="services-service-packages-intro">כל חבילה בנויה על אותם עקרונות: מעקב מדויק, בדיקות מבוקרות, והחלטות מבוססות נתונים. בחרו את הרמה שמתאימה לכם עכשיו.</p>
+    </div>
+
+    <div class="services-service-packages-grid">
+      <!-- Package 1: Launch Foundation -->
+      <article class="services-service-packages-card">
+        <div class="services-service-packages-card-header">
+          <h3>בסיס השקה</h3>
+          <p class="services-service-packages-card-description">הקמה נכונה מההתחלה – מבנה חשבונות מסודר, מעקב אחר המרות, והשקת הקמפיינים הראשונים שלכם עם תשתית שמאפשרת לכם לגדול.</p>
+        </div>
+        
+        <div class="services-service-packages-deliverables">
+          <ul>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>הקמת חשבון Google Ads / Meta Ads ממבנה</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>התקנה ובדיקת קוד מעקב (Pixel / GA4)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>הגדרת המרות ואירועים עסקיים מרכזיים</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>מחקר קהל יעד ומילות מפתח ראשוניות</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>בניית 2-3 קמפיינים ראשוניים</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>הכנת קריאייטיבים ראשוניים / כותרות מודעות</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>דוח ביצועים שבועי (4 שבועות)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>מפגש הדרכה לצוות שלכם</span></li>
+          </ul>
+        </div>
+
+        <div class="services-service-packages-meta">
+          <p class="services-service-packages-fit"><strong>מתאים לעסקים</strong> שמתחילים עם פרסום ממומן או רוצים לסדר חשבון קיים</p>
+          <p class="services-service-packages-timeline"><strong>לוח זמנים טיפוסי:</strong> 3-4 שבועות</p>
+        </div>
+
+        <div class="services-service-packages-cta">
+          <a href="#contact" class="services-service-packages-link">דברו איתי על החבילה הזו <i class="fas fa-arrow-left" aria-hidden="true"></i></a>
+        </div>
+      </article>
+
+      <!-- Package 2: Growth Management (emphasized) -->
+      <article class="services-service-packages-card services-service-packages-card-emphasized">
+        <div class="services-service-packages-card-header">
+          <h3>ניהול צמיחה</h3>
+          <p class="services-service-packages-card-description">ניהול שוטף עם אופטימיזציה מתמדת – מפת דרכים לבדיקות, דיווח שקוף, והתאמות מבוססות נתונים שמניעות את הביצועים קדימה חודש אחר חודש.</p>
+        </div>
+        
+        <div class="services-service-packages-deliverables">
+          <ul>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>ניהול שוטף של כל הקמפיינים הפעילים</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>אופטימיזציה שבועית (תקציבים, הצעות מחיר, קהלים)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>מפת דרכים לבדיקות A/B (מודעות, דפי נחיתה)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>הרחבת קהלים ומילות מפתח על בסיס ביצועים</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>ניתוח תחרות ומגמות שוק</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>דוח ביצועים מפורט (חודשי)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>מפגש אסטרטגיה חודשי</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>גישה לדשבורד ביצועים בזמן אמת</span></li>
+          </ul>
+        </div>
+
+        <div class="services-service-packages-meta">
+          <p class="services-service-packages-fit"><strong>מתאים לעסקים</strong> עם קמפיינים פעילים שרוצים לשפר ביצועים באופן עקבי</p>
+          <p class="services-service-packages-timeline"><strong>לוח זמנים טיפוסי:</strong> מחויבות חודשית (מינימום 3 חודשים)</p>
+        </div>
+
+        <div class="services-service-packages-cta">
+          <a href="#contact" class="services-service-packages-link">דברו איתי על החבילה הזו <i class="fas fa-arrow-left" aria-hidden="true"></i></a>
+        </div>
+      </article>
+
+      <!-- Package 3: Performance + CRO Support -->
+      <article class="services-service-packages-card">
+        <div class="services-service-packages-card-header">
+          <h3>ביצועים + תמיכת CRO</h3>
+          <p class="services-service-packages-card-description">פרסום ממומן בשילוב אופטימיזציה של דפי נחיתה – הבאת טראפיק איכותי היא רק חצי מהסיפור. אנחנו גם עוזרים לכם להמיר אותו טוב יותר.</p>
+        </div>
+        
+        <div class="services-service-packages-deliverables">
+          <ul>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>כל השירותים מחבילת "ניהול צמיחה"</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>ביקורת UX/CRO לדפי נחיתה מרכזיים</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>המלצות לשיפור שיעור המרה (עיצוב, טקסט, CTA)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>תכנון ניסויים (A/B tests) לדפי נחיתה</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>ניתוח התנהגות משתמשים (Heatmaps / Session Recordings)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>תיאום עם מעצבים/מפתחים (אם יש צורך)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>דוח משולב: פרסום + המרות (חודשי)</span></li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i><span>מפגש אסטרטגיה מורחב (דו-שבועי)</span></li>
+          </ul>
+        </div>
+
+        <div class="services-service-packages-meta">
+          <p class="services-service-packages-fit"><strong>מתאים לעסקים</strong> שרוצים לסגור את כל מסע הלקוח – מהקליק ועד להמרה</p>
+          <p class="services-service-packages-timeline"><strong>לוח זמנים טיפוסי:</strong> מחויבות חודשית (מינימום 4 חודשים)</p>
+        </div>
+
+        <div class="services-service-packages-cta">
+          <a href="#contact" class="services-service-packages-link">דברו איתי על החבילה הזו <i class="fas fa-arrow-left" aria-hidden="true"></i></a>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- Bottom Divider: Stepped Geometric Edge -->
+  <div class="services-service-packages-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewbox="0 0 1200 60" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 L0,30 L100,30 L100,25 L200,25 L200,20 L300,20 L300,15 L400,15 L400,20 L500,20 L500,25 L600,25 L600,20 L700,20 L700,15 L800,15 L800,20 L900,20 L900,25 L1000,25 L1000,30 L1100,30 L1100,25 L1200,25 L1200,60 Z" fill="#FFFFFF"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="services-deliverables-section" data-layout-spec="שירותים-deliverables">
+  <div class="services-deliverables-container">
+    <div class="services-deliverables-grid">
+      <div class="services-deliverables-content">
+        <h2>מה אתם מקבלים, בכתב</h2>
+        <p>כל פרויקט מתחיל בהצעת מחיר מפורטת ומסמך היקף עבודה ברור. אני מאמין בשקיפות מוחלטת – תדעו בדיוק מה נעשה, מתי, ועל מה אתם משלמים. אין הפתעות, אין "עוד משהו קטן" שלא היה מוסכם מראש.</p>
+        <p>בסיום כל שלב תקבלו דוחות מסודרים עם צילומי מסך, קישורים ישירים למערכות, והסברים ברורים. המטרה שלי היא לא רק להריץ קמפיינים – אלא להעביר לכם ידע ולתת לכם שליטה מלאה על התהליך.</p>
+        <p><strong>שיתוף פעולה:</strong> אני צריך גישה מנהל לחשבונות הפרסום, אישורים על קריאייטיבים תוך 48 שעות, וזמינות לשיחת סטטוס שבועית. ככל שהתקשורת תהיה מהירה וברורה יותר – כך נראה תוצאות מהר יותר.</p>
+      </div>
+      <div class="services-deliverables-checklist-panel">
+        <div class="services-deliverables-checklist-group">
+          <h3>מעקב ומדידה</h3>
+          <ul>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>התקנת פיקסל ואימות אירועים</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>מיפוי אירועי המרה מותאמים אישית</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>מוסכמות שמות וארגון חשבון</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>תכנית בדיקות לפני השקה</li>
+          </ul>
+        </div>
+        <div class="services-deliverables-checklist-group">
+          <h3>קמפיינים ותקציב</h3>
+          <ul>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>מבנה קמפיין אסטרטגי</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>הקצאת תקציב ממוקדת</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>הגדרות קהל יעד מדויקות</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>אופטימיזציה שוטפת</li>
+          </ul>
+        </div>
+        <div class="services-deliverables-checklist-group">
+          <h3>קריאייטיבים ותוכן</h3>
+          <ul>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>המלצות על עיצוב ומסרים</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>A/B testing שיטתי</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>ניתוח ביצועים של כל וריאציה</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>תיעוד מה עובד ומה לא</li>
+          </ul>
+        </div>
+        <div class="services-deliverables-checklist-group">
+          <h3>דיווח ותקשורת</h3>
+          <ul>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>סיכום שבועי עם תובנות מרכזיות</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>דשבורד בזמן אמת (גישה ישירה)</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>דוח חודשי מקיף</li>
+            <li><i class="fas fa-check-circle" data-element-type="icon" data-icon-type="font-awesome"></i>המלצות לחודש הבא</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="services-deliverables-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewbox="0 0 1200 60" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 L0,30 Q300,25 600,30 T1200,30 L1200,60 Z" fill="var(--bg-light)"></path>
+      <path d="M0,30 Q300,25 600,30 T1200,30" stroke="var(--secondary)" stroke-width="1.5" fill="var(--bg-light)"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="services-tools-stack-section" data-layout-spec="שירותים-tools-stack">
+  <div class="services-tools-stack-container">
+    <div class="services-tools-stack-intro">
+      <h2>מערכת מדידה מודרנית, פשוטה ויעילה</h2>
+      <p>אנחנו מאמינים שהצלחה בפרסום ממומן מתחילה במדידה נכונה. בעזרת כלי מדידה מתקדמים ותהליכי ניתוח מסודרים, אנחנו מבטיחים שכל שקל שאתם משקיעים במדיה הממומנת מתועד, מנותח ומשתפר בצורה מתמדת. זו לא רק טכנולוגיה – זו היכולת לקבל החלטות מבוססות נתונים ולהוביל את העסק שלכם קדימה.</p>
+    </div>
+
+    <div class="services-tools-stack-grid">
+      <div class="services-tools-stack-card">
+        <div class="services-tools-stack-icon" data-element-type="icon" data-icon-type="svg">
+          <svg viewbox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="32" width="8" height="8" stroke="currentColor" stroke-width="2" fill="none"></rect>
+            <rect x="20" y="24" width="8" height="16" stroke="currentColor" stroke-width="2" fill="none"></rect>
+            <rect x="32" y="16" width="8" height="24" stroke="currentColor" stroke-width="2" fill="none"></rect>
+            <path d="M10 30 L24 20 L36 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <h3>ניתוח ואנליטיקה</h3>
+        <p>פלטפורמות ניתוח נתונים מתקדמות למעקב אחר התנהגות משתמשים, מקורות תנועה וביצועי קמפיינים בזמן אמת.</p>
+      </div>
+
+      <div class="services-tools-stack-card">
+        <div class="services-tools-stack-icon" data-element-type="icon" data-icon-type="svg">
+          <svg viewbox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="32" height="32" rx="2" stroke="currentColor" stroke-width="2" fill="none"></rect>
+            <path d="M8 16 L40 16" stroke="currentColor" stroke-width="2"></path>
+            <circle cx="14" cy="12" r="1.5" fill="currentColor"></circle>
+            <circle cx="19" cy="12" r="1.5" fill="currentColor"></circle>
+            <circle cx="24" cy="12" r="1.5" fill="currentColor"></circle>
+            <path d="M16 24 L32 24 M16 28 L28 28 M16 32 L30 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <h3>ניהול תגיות</h3>
+        <p>מערכות ניהול תגיות לשילוב קל של כלי מדידה, פיקסלים ושכבות נתונים ללא צורך בקוד מורכב.</p>
+      </div>
+
+      <div class="services-tools-stack-card">
+        <div class="services-tools-stack-icon" data-element-type="icon" data-icon-type="svg">
+          <svg viewbox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="16" stroke="currentColor" stroke-width="2" fill="none"></circle>
+            <path d="M24 8 L24 24 L34 30" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="24" cy="24" r="2" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <h3>פלטפורמות פרסום</h3>
+        <p>ממשקי ניהול מתקדמים לקמפיינים בגוגל, פייסבוק, אינסטגרם ועוד – כולל אופטימיזציה אוטומטית ומעקב ביצועים.</p>
+      </div>
+
+      <div class="services-tools-stack-card">
+        <div class="services-tools-stack-icon" data-element-type="icon" data-icon-type="svg">
+          <svg viewbox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 36 L12 20 C12 16 14 14 18 14 L30 14 C34 14 36 16 36 20 L36 36" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"></path>
+            <circle cx="24" cy="26" r="4" stroke="currentColor" stroke-width="2" fill="none"></circle>
+            <path d="M20 30 L20 36 M28 30 L28 36" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            <rect x="10" y="36" width="28" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"></rect>
+          </svg>
+        </div>
+        <h3>מעקב שיחות</h3>
+        <p>מערכות לניתוב ומעקב אחר שיחות טלפון מקמפיינים, כולל הקלטות, ניתוח איכות ושיוך המרות לערוצי פרסום.</p>
+      </div>
+
+      <div class="services-tools-stack-card">
+        <div class="services-tools-stack-icon" data-element-type="icon" data-icon-type="svg">
+          <svg viewbox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="10" width="36" height="28" rx="2" stroke="currentColor" stroke-width="2" fill="none"></rect>
+            <path d="M6 18 L42 18" stroke="currentColor" stroke-width="2"></path>
+            <rect x="12" y="24" width="10" height="8" rx="1" fill="currentColor" opacity="0.3"></rect>
+            <rect x="26" y="24" width="10" height="8" rx="1" fill="currentColor" opacity="0.6"></rect>
+            <circle cx="17" cy="14" r="1.5" fill="currentColor"></circle>
+            <circle cx="22" cy="14" r="1.5" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <h3>דוחות וויזואליזציה</h3>
+        <p>כלי דשבורד מותאמים אישית להצגת נתונים בצורה ברורה וקלה להבנה – מאפשרים קבלת החלטות מהירה ומדויקת.</p>
+      </div>
+    </div>
+
+    <div class="services-tools-stack-chart">
+      <svg viewbox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg" data-no-icon-edit="true" aria-hidden="true">
+        <defs>
+          <linearGradient id="chart-gradient-primary" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.3"></stop>
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.05"></stop>
+          </linearGradient>
+          <linearGradient id="chart-gradient-secondary" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--secondary)" stop-opacity="0.3"></stop>
+            <stop offset="100%" stop-color="var(--secondary)" stop-opacity="0.05"></stop>
+          </linearGradient>
+        </defs>
+        
+        <!-- Grid lines -->
+        <line x1="0" y1="50" x2="800" y2="50" stroke="var(--border-light)" stroke-width="1" opacity="0.5"></line>
+        <line x1="0" y1="100" x2="800" y2="100" stroke="var(--border-light)" stroke-width="1" opacity="0.5"></line>
+        <line x1="0" y1="150" x2="800" y2="150" stroke="var(--border-light)" stroke-width="1" opacity="0.5"></line>
+        
+        <!-- Primary line chart -->
+        <path d="M50,140 L150,120 L250,100 L350,85 L450,75 L550,65 L650,55 L750,50" stroke="var(--primary)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M50,140 L150,120 L250,100 L350,85 L450,75 L550,65 L650,55 L750,50 L750,200 L50,200 Z" fill="url(#chart-gradient-primary)"></path>
+        
+        <!-- Secondary line chart -->
+        <path d="M50,160 L150,155 L250,145 L350,130 L450,115 L550,105 L650,95 L750,85" stroke="var(--secondary)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,5"></path>
+        
+        <!-- Data points -->
+        <circle cx="50" cy="140" r="4" fill="var(--primary)"></circle>
+        <circle cx="150" cy="120" r="4" fill="var(--primary)"></circle>
+        <circle cx="250" cy="100" r="4" fill="var(--primary)"></circle>
+        <circle cx="350" cy="85" r="4" fill="var(--primary)"></circle>
+        <circle cx="450" cy="75" r="4" fill="var(--primary)"></circle>
+        <circle cx="550" cy="65" r="4" fill="var(--primary)"></circle>
+        <circle cx="650" cy="55" r="4" fill="var(--primary)"></circle>
+        <circle cx="750" cy="50" r="4" fill="var(--primary)"></circle>
+      </svg>
+    </div>
+
+    <div class="services-tools-stack-closing">
+      <p>אנחנו בוחנים את הנתונים שלכם באופן שבועי, מנתחים מגמות ומבצעים התאמות לפי צורך. כל דו״ח שאנחנו מייצרים מתורגם להמלצות פעולה ברורות – כך שתמיד תדעו מה עובד, מה צריך שיפור ואיך להשקיע את התקציב בצורה החכמה ביותר.</p>
+    </div>
+  </div>
+
+  <div class="services-tools-stack-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewbox="0 0 1200 60" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="tools-divider-gradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--bg-light)" stop-opacity="1"></stop>
+          <stop offset="100%" stop-color="var(--bg-dark)" stop-opacity="1"></stop>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1200" height="60" fill="url(#tools-divider-gradient)"></rect>
+    </svg>
+  </div>
+</section>
+
+<section class="services-closing-block-section" data-layout-spec="שירותים-closing-block">
+  <div class="services-closing-block-container">
+    <h2 class="services-closing-block-title">מוכנים להפוך השקעה בפרסום לערוץ צמיחה מבוקר?</h2>
+    <p class="services-closing-block-text">בואו נקבע שיחה קצרה כדי לוודא התאמה ולתאם את הצעדים הבאים. אני כאן כדי לעזור לכם להגיע ליעדים שלכם בפרסום ממומן.</p>
+    <a href="/contact.html" class="services-closing-block-cta">קביעת שיחה</a>
+  </div>
+</section>
+  </main>
+  
+  <footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-top">
+      <div class="footer-column footer-about">
+        <img src="/assets/business-logo.webp" alt="מוטי ניסים" class="logo">
+        <p class="footer-description">מומחה בשיווק דיגיטלי, מוביל עסקים להצלחה באינטרנט עם אסטרטגיות מתקדמות ותוצאות מדידות.</p>
+      </div>
+      
+      <div class="footer-column footer-links">
+        <h3 class="footer-heading">קישורים מהירים</h3>
+        <ul class="footer-nav">
+          <li><a href="/services">שירותים</a></li>
+          <li><a href="/results">תוצאות</a></li>
+          <li><a href="/contact">צור קשר</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column footer-contact">
+        <h3 class="footer-heading">יצירת קשר</h3>
+        <ul class="contact-list">
+          <li>
+            <i class="fas fa-envelope"></i>
+            <a href="mailto:[business_email]">[business_email]</a>
+          </li>
+          <li>
+            <i class="fas fa-phone"></i>
+            <a href="tel:[business_phone]">[business_phone]</a>
+          </li>
+          <li><a href="/"><i class="fas fa-map-marker-alt"></i>
+            <span>[business_address]</span></a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column footer-social">
+        <h3 class="footer-heading">עקבו אחרינו</h3>
+        <div class="social-links">
+          <a href="[facebook_handle]" aria-label="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a href="[instagram_handle]" aria-label="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
+          <a href="[whatsapp_handle]" aria-label="WhatsApp" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="footer-bottom-content">
+        <p class="copyright">© 2026 מוטי ניסים. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="/privacy">Privacy Policy</a>
+          <span class="separator">|</span>
+          <a href="/terms">Terms &amp; Conditions</a>
+          <span class="separator">|</span>
+          <a href="/accessibility">Accessibility</a>
+          <span class="separator">|</span>
+          <a href="https://zappy5.com" target="_blank" class="zappy-attribution">Generated by Zappy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+  <a href="https://wa.me/[whatsapp_handle]" class="whatsapp-float" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  
+  <div data-integration="accessibility:toolbar"></div>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+
+    <script id="zappy-navbar-scroll-effect">
+    (function(){var nb=document.querySelector('nav.navbar,.navbar:not(.zappy-catalog-menu)');var cm=document.querySelector('.zappy-catalog-menu');if(!nb)return;var fb='rgba(11,18,32,0.85)';var th=60;nb.style.transition='background 0.3s ease,backdrop-filter 0.3s ease,-webkit-backdrop-filter 0.3s ease,box-shadow 0.3s ease';if(cm)cm.style.transition='background 0.3s ease,backdrop-filter 0.3s ease,-webkit-backdrop-filter 0.3s ease';function onS(){var y=window.scrollY||window.pageYOffset;if(y>th){nb.style.background=fb;nb.style.backdropFilter='blur(12px)';nb.style.webkitBackdropFilter='blur(12px)';nb.style.boxShadow='0 2px 16px rgba(0,0,0,0.12)';if(cm){cm.style.background=fb;cm.style.backdropFilter='blur(12px)';cm.style.webkitBackdropFilter='blur(12px)';}}else{nb.style.background='transparent';nb.style.backdropFilter='none';nb.style.webkitBackdropFilter='none';nb.style.boxShadow='none';if(cm){cm.style.background='transparent';cm.style.backdropFilter='none';cm.style.webkitBackdropFilter='none';}}}window.addEventListener('scroll',onS,{passive:true});onS();})();
+    </script>
+</body>
+</html>

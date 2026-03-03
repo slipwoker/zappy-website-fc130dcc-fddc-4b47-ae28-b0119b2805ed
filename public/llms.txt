@@ -1,0 +1,57 @@
+# מוטי ניסים — Generative Engine Optimization Map
+
+> A digital marketing professional specializing in paid advertising services for businesses. The brand focuses on helping companies grow through targeted paid media campaigns and advertising solutions.
+
+---
+
+## Pages
+
+### בית
+https://-fc130dcc.zappy5.app
+מומחה פרסום ממומן בגוגל, פייסבוק ואינסטגרם. קמפיינים ממוקדים שמגדילים מכירות ומביאים לידים איכוטיים לעסקים קטנים ובינוניים. התחל לצמוח היום!
+
+### שירותים
+https://-fc130dcc.zappy5.app/services
+קמפיינים ממומנים בגוגל, פייסבוק ואינסטגרם המותאמים במיוחד לעסקים. ניהול תקציב חכם, טרגוט מדויק ותוצאות מדידות. גלה את מגוון השירותים שלנו.
+
+### תוצאות
+https://-fc130dcc.zappy5.app/results
+צפה בתוצאות מרשימות של עסקים שהכפילו מכירות דרך פרסום ממומן חכם. מקרי מבחן אמיתיים, נתונים קשיחים והצלחות מוכחות. התוצאות מדברות בעד עצמן!
+
+### צור קשר
+https://-fc130dcc.zappy5.app/contact
+מוכן להתחיל קמפיין פרסום ממומן שמניב תוצאות? צור קשר עכשיו לייעוץ ללא התחייבות. נבנה ביחד אסטרטגיית פרסום שתקפיץ את העסק שלך לשלב הבא!
+
+## Legal & Policy
+
+### Privacy Policy
+https://-fc130dcc.zappy5.app/privacy
+Information about how user data is collected, stored, and protected.
+
+### Terms & Conditions
+https://-fc130dcc.zappy5.app/terms
+Legal terms describing service usage, rights, and policies.
+
+### Accessibility Statement
+https://-fc130dcc.zappy5.app/accessibility
+Information about WCAG compliance and accessibility features.
+
+---
+
+# Business Context (for LLM understanding)
+
+## About מוטי ניסים
+A digital marketing professional specializing in paid advertising services for businesses. The brand focuses on helping companies grow through targeted paid media campaigns and advertising solutions.
+
+## Target Audience
+עסקים
+
+## Industry
+שיווק דיגיטלי
+
+---
+
+# Additional Resources
+
+- **Sitemap**: https://-fc130dcc.zappy5.app/sitemap.xml
+- **Robots.txt**: https://-fc130dcc.zappy5.app/robots.txt
